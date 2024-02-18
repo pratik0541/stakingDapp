@@ -84,9 +84,12 @@ export default function Home() {
             </>
               :
               (
-                <button className="btn btn-primary btn-block" onClick={connectWallet}>
-                  Connect Metamask
-                </button>
+                <>
+                  <button className="btn btn-primary btn-block" onClick={connectWallet}>
+                    Connect Metamask
+                  </button>
+                  <a style={{textAlign: "center"}} href="https://metamask.io/download/" target="_blank">Install Metamask</a>
+                </>
               )
             }
         </div>
