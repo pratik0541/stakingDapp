@@ -115,7 +115,7 @@ const AppProvider = ({ children }) => {
             },
             []
           );
-          setAccount(accounts[0]);
+          // setAccount(accounts[0]);
       } catch (err) {
         setMessage({ title: "error", description: err.message.split("(")[0] });
       }
@@ -247,16 +247,22 @@ const AppProvider = ({ children }) => {
     }
   }, [account]);
 
+  // const getBalancesCheck = async () => {
+  //   if(checkEthereumExists() && window.ethereum.chainId === "0xaa36a7" && account){
+  //     loadContract()
+  //   }
+  // };
+
   useEffect(() => {
     if (checkEthereumExists()) {
       ethereum.on("accountsChanged", getConnectedAccounts);
-      // ethereum.on("chainChanged", getConnectedAccounts);
+      ethereum.on("chainChanged", getConnectedAccounts);
       getConnectedAccounts();
     }
     return () => {
       if (checkEthereumExists()) {
         ethereum.removeListener("accountsChanged", getConnectedAccounts);
-        // ethereum.removeListener("chainChanged", getConnectedAccounts);
+        ethereum.removeListener("chainChanged", getConnectedAccounts);
       }
     };
   }, []);
