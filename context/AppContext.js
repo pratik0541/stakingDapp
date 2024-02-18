@@ -66,30 +66,56 @@ const AppProvider = ({ children }) => {
     }
     return true;
   };
+
+  const checkCorrectChain = async () => {
+      if((await ethereum.request({ method: 'eth_chainId' })) !== "0xaa36a7"){
+        try {
+          await ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: "0xaa36a7"}],
+          });
+          console.log("You have succefully switched to Sepolia Test network")
+          return true;
+          } catch (switchError) {
+            // This error code indicates that the chain has not been added to MetaMask.
+            if (switchError.code === 4902) {
+              console.log("This network is not available in your metamask, please add it")
+            }
+            console.log("Failed to switch to the network")
+            return false;
+          }
+        } else {
+          return true;
+        }
+  };
+
   const getConnectedAccounts = async () => {
     try {
-      const accounts = await ethereum.request(
-        {
-          method: "eth_accounts",
-        },
-        []
-      );
-      setAccount(accounts[0]);
+      if(await checkCorrectChain()){
+        const accounts = await ethereum.request(
+          {
+            method: "eth_accounts",
+          },
+          []
+        );
+        console.log(accounts)
+        await setAccount(accounts[0]);
+      }
     } catch (err) {
       setMessage({ title: "error", description: err.message.split("(")[0] });
     }
   };
+
   const connectWallet = async () => {
     if (checkEthereumExists()) {
       try {
-        const accounts = await ethereum.request(
-          {
-            method: "eth_requestAccounts",
-          },
-          []
-        );
-        console.log(accounts);
-        setAccount(accounts[0]);
+          const accounts = await ethereum.request(
+            {
+              method: "eth_requestAccounts",
+            },
+            []
+          );
+          setAccount(accounts[0]);
       } catch (err) {
         setMessage({ title: "error", description: err.message.split("(")[0] });
       }
@@ -224,11 +250,13 @@ const AppProvider = ({ children }) => {
   useEffect(() => {
     if (checkEthereumExists()) {
       ethereum.on("accountsChanged", getConnectedAccounts);
+      // ethereum.on("chainChanged", getConnectedAccounts);
       getConnectedAccounts();
     }
     return () => {
       if (checkEthereumExists()) {
         ethereum.removeListener("accountsChanged", getConnectedAccounts);
+        // ethereum.removeListener("chainChanged", getConnectedAccounts);
       }
     };
   }, []);
@@ -248,7 +276,7 @@ const AppProvider = ({ children }) => {
         tokenDetails
       }}
     >
-      <div class="login-dark">
+      <div className="login-dark">
       {children}
       </div>
     </AppContext.Provider>
