@@ -1,4 +1,4 @@
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import React, { createContext, useEffect, useState } from "react";
 import {
   cwmAbi,
@@ -42,6 +42,7 @@ const AppProvider = ({ children }) => {
   const [balance, setBalance] = useState(0);
   const [tokenDetails, setTokenDetails] = useState();
   const [stakeDetails, setStakeDetails] = useState();
+  const [stakeTransactions, setStakeTransactions] = useState();
   const [nextBuyTime, setNextBuyTime] = useState(0);
   const [cwmContract, setCwmContract] = useState();
   const [tokenContract, setTokenContract] = useState();
@@ -172,13 +173,25 @@ const AppProvider = ({ children }) => {
       console.log(account, stakeContract);
       let allStakeData = [];
       for(var i = 0; i < 100; i++){
-        let data = await stakeContract.stakedAmounts(account,i);  
-        console.log(data)
-        if(data)
-          allStakeData.push(data)
+        try{
+        let data = await stakeContract.stakedAmounts(account,i);
+        let dataReward = await stakeContract.calculateReward(account,i);
+        console.log(dataReward)
+        let currentData = {};
+        currentData["addTime"] = new Date(Number(data.addTime + "000")).toLocaleDateString()
+        currentData["amount"] = Number(ethers.utils.formatEther(BigNumber.from(data.amount)))
+        currentData["reward"] = Number(ethers.utils.formatEther(BigNumber.from(dataReward)))
+        currentData["canWithdraw"] = new Date(Number(data.addTime + "000") + 3600000) < new Date().getTime()
+        if(currentData)
+          allStakeData.push(currentData)
+        } catch(e){
+          console.log(e)
+          i = 100;
+        }
       }
       
       console.log(allStakeData);
+      setStakeTransactions(allStakeData)
     });
   };
 
@@ -298,7 +311,8 @@ const AppProvider = ({ children }) => {
         nextBuyTime,
         message,
         tokenDetails,
-        stakeDetails
+        stakeDetails,
+        stakeTransactions
       }}
     >
       <div className="login-dark">

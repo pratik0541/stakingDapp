@@ -3,7 +3,7 @@ import { AppContext } from "../context/AppContext";
 import { ethers, BigNumber } from "ethers";
 import Head from "next/head";
 export default function Home() {
-  const { account, message, stakeDetails, connectWallet, stake, stakeLoading, approve, approveLoading, nextBuyTime, requestTokens, tokenDetails } =
+  const { account, message, stakeDetails, stakeTransactions, connectWallet, stake, stakeLoading, approve, approveLoading, nextBuyTime, requestTokens, tokenDetails } =
     useContext(AppContext);
   const [data, setData] = useState({});
   const [showStaked, setShowStaked] = useState(false);
@@ -23,6 +23,7 @@ export default function Home() {
       </Head>
         <div className={ account ? "insideDiv" : "insideDiv alignCenterConnectBtn"}>
           { account ? 
+            !showStaked ? 
             <>
               <div className="form-group">
                 <h3 className="boxTitle">Stake {tokenDetails ? tokenDetails.symbol : ""} Tokens</h3>
@@ -86,6 +87,38 @@ export default function Home() {
                 </a>
                 : null}
             </>
+            :
+            <>
+              <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                <table class="w-full text-lg text-left rtl:text-right border-collapse border border-slate-400">
+                  <thead class="text-[#b8860b] bg-black-50 border-b dark:border-black-700">
+                    <tr className="text-[#b8860b] bg-black-50 border-b dark:border-black-700">
+                      <th className="text-center">Staked Amount</th>
+                      <th>Date</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {
+                      stakeTransactions ? 
+                      stakeTransactions.map((ele)=>{
+                        return (
+                          <tr className="text-[#b8860b]">
+                            <td className="text-center">{ele.amount}</td>
+                            <td>{ele.addTime}</td>
+                            <td>{ele.reward > 0 && ele.canWithdraw ? "Withdraw" : ele.canWithdraw ? "Claimed" : "Locked"}</td>
+                          </tr>      
+                        )
+                      })
+                      :
+                      <tr className="colspan 2">
+                        <td>No Records</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </>
               :
               (
                 <>
@@ -96,8 +129,16 @@ export default function Home() {
                 </>
               )
             }
+            { account ? 
+            !showStaked ? 
+            <div>
+              <button onClick={()=>setShowStaked(true)}>View Staked Details</button>
+            </div> :
+            <div>
+              <button onClick={()=>setShowStaked(false)}>Stake Tokens</button>
+            </div> 
+             : null  }
         </div>
-
     </>
     // <div className="bg-white-300 flex-1">
     //   <Head>
