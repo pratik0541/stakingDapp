@@ -41,6 +41,7 @@ const AppProvider = ({ children }) => {
   const [message, setMessage] = useState("");
   const [balance, setBalance] = useState(0);
   const [tokenDetails, setTokenDetails] = useState();
+  const [stakeDetails, setStakeDetails] = useState();
   const [nextBuyTime, setNextBuyTime] = useState(0);
   const [cwmContract, setCwmContract] = useState();
   const [tokenContract, setTokenContract] = useState();
@@ -152,6 +153,20 @@ const AppProvider = ({ children }) => {
     });
   };
 
+  const getStakeDetails = () => {
+    callContract(async () => {
+      console.log(account, stakeContract);
+      let reward_rate = (await stakeContract.REWARD_RATE()).toString();
+      let lockin_time = (await stakeContract.LOCKIN_TIME()).toString();
+      console.log(reward_rate);
+      console.log(lockin_time);
+      setStakeDetails({
+        reward_rate: reward_rate,
+        lockin_time: lockin_time
+      })
+    });
+  };
+
   const getStakingData = () => {
     callContract(async () => {
       console.log(account, stakeContract);
@@ -236,7 +251,10 @@ const AppProvider = ({ children }) => {
   }, [refresh, tokenContract]);
 
   useEffect(() => {
-    if (stakeContract) getStakingData();
+    if (stakeContract) {
+      getStakeDetails();
+      getStakingData();
+    }
     // if (faucetContract) getNextBuyTime();
   }, [refresh, stakeContract]);
 
@@ -279,7 +297,8 @@ const AppProvider = ({ children }) => {
         requestTokens,
         nextBuyTime,
         message,
-        tokenDetails
+        tokenDetails,
+        stakeDetails
       }}
     >
       <div className="login-dark">

@@ -3,7 +3,7 @@ import { AppContext } from "../context/AppContext";
 import { ethers, BigNumber } from "ethers";
 import Head from "next/head";
 export default function Home() {
-  const { account, message, connectWallet, stake, stakeLoading, approve, approveLoading, nextBuyTime, requestTokens, tokenDetails } =
+  const { account, message, stakeDetails, connectWallet, stake, stakeLoading, approve, approveLoading, nextBuyTime, requestTokens, tokenDetails } =
     useContext(AppContext);
   const [data, setData] = useState({});
   const [showStaked, setShowStaked] = useState(false);
@@ -26,6 +26,10 @@ export default function Home() {
             <>
               <div className="form-group">
                 <h3 className="boxTitle">Stake {tokenDetails ? tokenDetails.symbol : ""} Tokens</h3>
+              </div>
+              <div className="form-group rewLocking">
+                <h4>Reward Rate: {stakeDetails ? stakeDetails.reward_rate : ""}%</h4>
+                <h4>Locking Period: {stakeDetails ? Math.floor(stakeDetails.lockin_time/3600) : ""} Hour</h4>
               </div>
               <div className="form-group">
                 <input
