@@ -30,7 +30,7 @@ export default function Home() {
               </div>
               <div className="form-group rewLocking">
                 <h4>Reward Rate: {stakeDetails ? stakeDetails.reward_rate : ""}%</h4>
-                <h4>Locking Period: {stakeDetails ? Math.floor(stakeDetails.lockin_time/3600) : ""} Hour</h4>
+                <h4>Locking Period: {stakeDetails ? Math.floor(stakeDetails.lockin_time/31536000) : ""} Years</h4>
               </div>
               <div className="form-group">
                 <input

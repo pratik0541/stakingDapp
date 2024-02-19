@@ -70,11 +70,11 @@ const AppProvider = ({ children }) => {
   };
 
   const checkCorrectChain = async () => {
-      if((await ethereum.request({ method: 'eth_chainId' })) !== "0xaa36a7"){
+      if((await ethereum.request({ method: 'eth_chainId' })) !== "0x1"){
         try {
           await ethereum.request({
             method: 'wallet_switchEthereumChain',
-            params: [{ chainId: "0xaa36a7"}],
+            params: [{ chainId: "0x1"}],
           });
           console.log("You have succefully switched to Sepolia Test network")
           return true;
@@ -279,7 +279,7 @@ const AppProvider = ({ children }) => {
   }, [account]);
 
   // const getBalancesCheck = async () => {
-  //   if(checkEthereumExists() && window.ethereum.chainId === "0xaa36a7" && account){
+  //   if(checkEthereumExists() && window.ethereum.chainId === "0x1" && account){
   //     loadContract()
   //   }
   // };
